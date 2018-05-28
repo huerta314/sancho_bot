@@ -7,22 +7,16 @@
 
 #include "motors.h"
 #include "motors.h"                         
-<<<<<<< HEAD
-=======
 #include < Servo.h >
->>>>>>> fa2d646b5dfb5a69d977b627357ca95e355a64c5
 
 motors left_motor(4,5);
 motors right_motor(2,3);
 
-<<<<<<< HEAD
 int distance;
 long duration;
 int green_led_flag;
 int red_led_flag;
-=======
 int pos = 0;
->>>>>>> fa2d646b5dfb5a69d977b627357ca95e355a64c5
 int state = 0;
 
 void bluetooth_control();
@@ -41,7 +35,6 @@ void loop()                                  // Main loop auto-repeats
 { 
   bluetooth_control();
   read_ultra();
-<<<<<<< HEAD
   if(green_led_flag == 1){
     digitalWrite(GREENLED, HIGH);  
   }else{
@@ -52,13 +45,7 @@ void loop()                                  // Main loop auto-repeats
   }else{
     digitalWrite(REDLED, LOW); 
   }
-=======
-
   servo_test();
-  
-   
-  
->>>>>>> fa2d646b5dfb5a69d977b627357ca95e355a64c5
 }
 
 
@@ -122,8 +109,6 @@ void servo_test(){
     myservo.write(pos);              // tell servo to go to position in variable 'pos'
     delay(15);                       // waits 15ms for the servo to reach the position
   }
-
- 
 }
 
 
