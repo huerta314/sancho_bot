@@ -1,79 +1,100 @@
 #define trigPin 9
 #define echoPin 10
+#define GREENLED 12
+#define REDLED 11
+
+#define petTime 5
 
 #include "motors.h"
 #include "motors.h"                         
 
-
 motors left_motor(4,5);
+motors right_motor(2,3);
 
-
+int distance;
+long duration;
+int green_led_flag;
+int red_led_flag;
 int state = 0;
+
+void bluetooth_control();
+void read_ultra();
 
 void setup()                                 // Built in initialization block
 {
   Serial.begin(9600);
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
+  pinMode(GREENLED, OUTPUT);
+  pinMode(REDLED, OUTPUT);
 }  
  
 void loop()                                  // Main loop auto-repeats
-{    
-//  left_motor.motor_cmd(1);
-//  delay(1000);
-//  left_motor.motor_cmd(0);
-//  delay(1000);
-//  left_motor.motor_cmd(-1);
-//  delay(1000);
-//  left_motor.motor_cmd(0);
-//  delay(1000);
-
+{ 
+  bluetooth_control();
   read_ultra();
-
-   
-  
+  if(green_led_flag == 1){
+    digitalWrite(GREENLED, HIGH);  
+  }else{
+    digitalWrite(GREENLED, LOW); 
+  }
+  if(red_led_flag == 1){
+    digitalWrite(REDLED, HIGH);  
+  }else{
+    digitalWrite(REDLED, LOW); 
+  }
 }
 
 
-long read_ultra(){
-  int distance;
-  // Clears the trigPin
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
+void read_ultra(){
+   // Clears the trigPin
+   digitalWrite(trigPin, LOW);
+   delayMicroseconds(2);
+   
+   // Sets the trigPin on HIGH state for 10 micro seconds
+   digitalWrite(trigPin, HIGH);
+   delayMicroseconds(10);
+   digitalWrite(trigPin, LOW);
   
-  // Sets the trigPin on HIGH state for 10 micro seconds
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  
-  // Reads the echoPin, returns the sound wave travel time in microseconds
-  duration = pulseIn(echoPin, HIGH);
-  // Calculating the distance
-  distance= duration*0.034/2;
-  // Prints the distance on the Serial Monitor
-  Serial.print("Distance: ");
-  Serial.println(distance);
-  return distance;
+   // Reads the echoPin, returns the sound wave travel time in microseconds
+   duration = pulseIn(echoPin, HIGH);
+   // Calculating the distance
+   distance= duration*0.034/2;
+   if(distance <= 1){
+     red_led_flag = 1;
+   }else{
+     red_led_flag = 0;
+   }
 }
 
 void bluetooth_control(){
   if(Serial.available() > 0){
-    state = Serial.read();   
+    state = Serial.read();
+    Serial.print(state);   
   }
   if(state == '1'){ //FORWARD
     left_motor.motor_cmd(1);
-    //right_motor.motor_cmd(1);
+    right_motor.motor_cmd(1);
+    green_led_flag = 1;
   }else if(state == '2'){ //REVERSE
     left_motor.motor_cmd(-1);
-    //right_motor.motor_cmd(-1);
+    right_motor.motor_cmd(-1);
+    green_led_flag = 1;
   }else if(state == '3'){ //LEFT
     left_motor.motor_cmd(-1);
-    //right_motor.motor_cmd(1);  
+    right_motor.motor_cmd(1);
+    green_led_flag = 1;
   }else if(state == '4'){ //RIGHT
     left_motor.motor_cmd(1);
-    //right_motor.motor_cmd(-1);
+    right_motor.motor_cmd(-1);
+    green_led_flag = 1;
+  }else if(state == '5'){ //STOP
+    left_motor.motor_cmd(0);
+    right_motor.motor_cmd(0);
+    green_led_flag = 0;
   }
 }
+
 
 
 
